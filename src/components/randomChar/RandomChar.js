@@ -37,7 +37,7 @@ class RandomChar extends Component {
                     <img src={thumbnail} alt="Random character" className="randomchar__img"/>
                     <div className="randomchar__info">
                         <p className="randomchar__name">{name}</p>
-                        <p className="randomchar__descr">{descr}</p>
+                        <p className="randomchar__descr">{descr ? this.marvelService.reduceText(descr) : ''}</p>
                         <div className="randomchar__btns">
                             <a href={homepage} className="button button__main">
                                 <div className="inner">homepage</div>
