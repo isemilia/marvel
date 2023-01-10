@@ -22,9 +22,9 @@ class RandomChar extends Component {
     
     marvelService = new MarvelService();
 
-    updateChar = async () => {
+    updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        await this.marvelService
+        this.marvelService
             .getCharacter(id)
             .then(res => {
                 const {data} = res;
@@ -32,9 +32,9 @@ class RandomChar extends Component {
                 this.setState({
                     name: results[0].name,
                     descr: results[0].description,
-                    thumbnail: results[0].thumbnail.path + '.' + results[0].thumbnail.extension,
+                    thumbnail: `${results[0].thumbnail.path}.${results[0].thumbnail.extension}`,
                     homepage: results[0].urls[0].url,
-                    wiki: results[0].urls[1].url,
+                    wiki: results[0].urls[1].url
                 });
             });
     }
