@@ -78,10 +78,13 @@ const View = ({char}) => {
         ))
     }
     const comicsElems = transformComics().slice(0, 10);
+
+    const imgExists = !thumbnail.includes('image_not_available');
+    const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
         <>
             <div className="char__basics">
-                <img src={thumbnail} alt="abyss"/>
+                <img src={thumbnail} alt="abyss" style={imgStyle} />
                 <div>
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
