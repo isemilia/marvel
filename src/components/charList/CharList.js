@@ -44,12 +44,16 @@ class CharList extends Component {
             loading: false
         });
     }
+    onError = () => {
+        this.setState({error: true, loading: false})
+    }
     getChars = () => {
         marvelService
             .getAllCharacters()
-            .then(this.onCharsLoaded);
+            .then(this.onCharsLoaded)
+            .catch(this.onError);
     }
-    renderChars = () => {
+    transformChars = () => {
         const {chars} = this.state;
         return chars.map(char => (<CharItem img={char.thumbnail} name={char.name} key={char.id} />));
     }
@@ -57,7 +61,7 @@ class CharList extends Component {
         this.getChars();
     }
     render() {
-        const charElems = this.renderChars();
+        const charElems = this.transformChars();
         const {loading, error} = this.state;
         const spinner = loading ? <Spinner/> : null;
         const errorMessage = error ? <ErrorMessage/> : null;
