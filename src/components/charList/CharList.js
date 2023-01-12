@@ -38,21 +38,47 @@ class CharList extends Component {
     state = {
         chars: [],
         loading: true,
-        error: false
+        error: false,
+        newItemLoading: false,
+        offset: 210, // 1562 total
+        charsEnded: false
+    }
+    onCharListLoading = () => {
+        this.setState({
+            newItemLoading: true
+        })
     }
     onCharsLoaded = (chars) => {
+        let ended = false;
+        let limit = 9;
+        if (chars.length < 9) {
+            limit = chars.length;
+            ended = true;
+        }
         const newChars = chars.map(char => ({name: char.name, thumbnail: char.thumbnail, id: char.id}));
-        this.setState({
-            chars: newChars,
-            loading: false
-        });
+        this.setState(({offset, chars}) => ({
+            chars: [...chars, ...newChars],
+            loading: false,
+            newItemLoading: false,
+            offset: offset + limit,
+            charEnded: ended
+        }));
     }
     onError = () => {
-        this.setState({error: true, loading: false})
+        this.setState({
+            error: true, 
+            loading: false,
+            newItemLoading: false
+        })
     }
-    getChars = () => {
+    getChars = (offset) => {
+        let limit;
+        if (this.state.offset + 9 > 1562) {
+            limit = 1562 - this.state.offset;
+        }
+        this.onCharListLoading();
         marvelService
-            .getAllCharacters()
+            .getAllCharacters(offset, limit)
             .then(this.onCharsLoaded)
             .catch(this.onError);
     }
@@ -72,16 +98,22 @@ class CharList extends Component {
     }
     render() {
         const charElems = this.transformChars();
-        const {loading, error} = this.state;
+        const {loading, error, offset, newItemLoading, charEnded} = this.state;
         const spinner = loading ? <Spinner/> : null;
         const errorMessage = error ? <ErrorMessage/> : null;
         const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
+
+        const btnStyle = newItemLoading ? {filter: 'grayscale(1)', opacity: '.5', cursor: 'not-allowed'} : null;
         return (
             <div className="char__list">
                 {spinner}
                 {errorMessage}
                 {content}
-                <button className="button button__main button__long">
+                <button 
+                    onClick={() => {this.getChars(offset)}} 
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    style={{...btnStyle, display: charEnded ? 'none' : 'block'}}>
                     <div className="inner">load more</div>
                 </button>
             </div>
