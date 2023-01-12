@@ -81,7 +81,7 @@ class RandomChar extends Component {
 const View = ({char}) => {
     const {name, descr, thumbnail, homepage, wiki} = char;
     const imgExists = !thumbnail.includes('image_not_available');
-    const imgStyle = imgExists ? null : {objectFit: 'contain'};
+    const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
         <div className="randomchar__block">
             <img 

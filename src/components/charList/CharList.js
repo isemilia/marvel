@@ -1,19 +1,31 @@
 import { Component } from 'react';
 
 import MarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
 
 // char__item_selected
 
 const CharItem = (props) => {
     const {img, name} = props;
+    const imgExists = !img.includes('image_not_available');
+    const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
         <li className="char__item">
-            <img src={img} alt={name} />
+            <img src={img} alt={name} style={imgStyle} />
             <div className="char__name">{name}</div>
         </li>
+    )
+}
+
+const CharGrid = (props) => {
+    const {elems} = props;
+    return (
+        <ul className="char__grid">
+            {elems}
+        </ul>
     )
 }
 
@@ -21,11 +33,16 @@ const marvelService = new MarvelService();
 
 class CharList extends Component {
     state = {
-        chars: []
+        chars: [],
+        loading: true,
+        error: false
     }
     onCharsLoaded = (chars) => {
         const newChars = chars.map(char => ({name: char.name, thumbnail: char.thumbnail, id: char.id}));
-        this.setState({chars: newChars});
+        this.setState({
+            chars: newChars,
+            loading: false
+        });
     }
     getChars = () => {
         marvelService
@@ -41,11 +58,15 @@ class CharList extends Component {
     }
     render() {
         const charElems = this.renderChars();
+        const {loading, error} = this.state;
+        const spinner = loading ? <Spinner/> : null;
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
         return (
             <div className="char__list">
-                <ul className="char__grid">
-                    {charElems}
-                </ul>
+                {spinner}
+                {errorMessage}
+                {content}
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>
