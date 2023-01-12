@@ -9,11 +9,11 @@ import './charList.scss';
 // char__item_selected
 
 const CharItem = (props) => {
-    const {img, name} = props;
+    const {img, name, charID, onCharSelected} = props;
     const imgExists = !img.includes('image_not_available');
     const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
-        <li className="char__item">
+        <li className="char__item" onClick={() => onCharSelected(charID)}>
             <img src={img} alt={name} style={imgStyle} />
             <div className="char__name">{name}</div>
         </li>
@@ -32,6 +32,9 @@ const CharGrid = (props) => {
 const marvelService = new MarvelService();
 
 class CharList extends Component {
+    constructor(props) {
+        super(props);
+    }
     state = {
         chars: [],
         loading: true,
@@ -55,7 +58,14 @@ class CharList extends Component {
     }
     transformChars = () => {
         const {chars} = this.state;
-        return chars.map(char => (<CharItem img={char.thumbnail} name={char.name} key={char.id} />));
+        return chars.map(char => (
+            <CharItem 
+                img={char.thumbnail} 
+                name={char.name} 
+                charID={char.id}
+                key={char.id}
+                onCharSelected={this.props.onCharSelected} />
+        ));
     }
     componentDidMount = () => {
         this.getChars();
