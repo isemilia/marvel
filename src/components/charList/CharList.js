@@ -10,11 +10,22 @@ import './charList.scss';
 // char__item_selected
 
 const CharItem = (props) => {
-    const {img, name, charID, onCharSelected} = props;
+    const {img, name, charID, onCharSelected, setRef, onFocus, index} = props;
     const imgExists = !img.includes('image_not_available');
     const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
-        <li className="char__item" onClick={() => onCharSelected(charID)}>
+        <li 
+            ref={setRef} 
+            className="char__item" 
+            tabIndex="0" 
+            onClick={() => {
+                onCharSelected(charID);
+                onFocus(index);
+            }}
+            onKeyDown={() => {
+                onCharSelected(charID);
+                onFocus(index);
+            }}>
             <img src={img} alt={name} style={imgStyle} />
             <div className="char__name">{name}</div>
         </li>
@@ -83,10 +94,26 @@ class CharList extends Component {
             .then(this.onCharsLoaded)
             .catch(this.onError);
     }
+
+    itemRefs = [];
+
+    setRef = item => {
+        this.itemRefs.push(item);
+    }
+
+    onFocus = (index) => {
+        // console.log(this.itemRefs[index], index);
+        this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
+        this.itemRefs[index].classList.add('char__item_selected');
+    }
+
     transformChars = () => {
         const {chars} = this.state;
-        return chars.map(char => (
+        return chars.map((char, i) => (
             <CharItem 
+                onFocus={this.onFocus}
+                setRef={this.setRef}
+                index={i}
                 img={char.thumbnail} 
                 name={char.name} 
                 charID={char.id}
@@ -94,9 +121,11 @@ class CharList extends Component {
                 onCharSelected={this.props.onCharSelected} />
         ));
     }
+
     componentDidMount = () => {
         this.getChars();
     }
+
     render() {
         const charElems = this.transformChars();
         const {loading, error, offset, newItemLoading, charEnded} = this.state;
