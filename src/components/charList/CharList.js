@@ -41,7 +41,7 @@ const CharGrid = (props) => {
     )
 }
 
-const marvelService = new MarvelService();
+const marvelService = MarvelService();
 
 const CharList = (props) => {
     const [chars, setChars] = useState([]);

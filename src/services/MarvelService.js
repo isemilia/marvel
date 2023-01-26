@@ -1,31 +1,23 @@
+import { useHttp } from "../hooks/http.hook";
 
 
+const useMarvelService = () => {
+    const _apiBase = 'https://gateway.marvel.com:443/v1/public';
+    const _apiKey = 'apikey=15814f840a76e9464de8f674c390fe6d';
+    const _baseOffset = 210;
+    const _limit = 9;
 
-class MarvelService {
-    _apiBase = 'https://gateway.marvel.com:443/v1/public';
-    _apiKey = 'apikey=15814f840a76e9464de8f674c390fe6d';
-    _baseOffset = 210;
-    _limit = 9;
+    const {loading, request, error} = useHttp();
 
-
-    getResource = async (url) => {
-        const res = await fetch(url);
-    
-        if(!res.ok) {
-            throw new Error(`Could not fetch ${url}, status ${res.status} ${res.statusText}`)
-        }
-    
-        return await res.json();
+    const getAllCharacters = async (offset = _baseOffset, limit = _limit) => {
+        const res = await request(`${_apiBase}/characters?limit=${limit}&offset=${offset}&${_apiKey}`);
+        return res.data.results.map(char => (_transformCharacter(char)));
     }
-    getAllCharacters = async (offset = this._baseOffset, limit = this._limit) => {
-        const res = await this.getResource(`${this._apiBase}/characters?limit=${limit}&offset=${offset}&${this._apiKey}`);
-        return res.data.results.map(char => (this._transformCharacter(char)));
+    const getCharacter = async (id) => {
+        const res = await request(`${_apiBase}/characters/${id}?${_apiKey}`);
+        return _transformCharacter(res.data.results[0]);
     }
-    getCharacter = async (id) => {
-        const res = await this.getResource(`${this._apiBase}/characters/${id}?${this._apiKey}`);
-        return this._transformCharacter(res.data.results[0]);
-    }
-    _transformCharacter = (char) => {
+    const _transformCharacter = (char) => {
         return {
             name: char.name,
             descr: char.description ? char.description : 'There is no description for this character.',
@@ -36,12 +28,14 @@ class MarvelService {
             comics: char.comics.items
         }
     }
-    reduceText = (text) => {
+    const reduceText = (text) => {
         return text.length > 210 ? text.substring(0, 211).trim() + '...' : text;
     }
-    generateID() {
+    const generateID = () => {
         return Math.random().toString(16).slice(2);
     }
+
+    return {loading, error, getAllCharacters, getCharacter, reduceText, generateID};
 } 
 
-export default MarvelService;
+export default useMarvelService;

@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Component } from 'react';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
-    
-const marvelService = new MarvelService();
 
 const RandomChar = () => {
     const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+
+    const {loading, error, getCharacter} = useMarvelService();
 
     useEffect(() => {
         updateChar();
@@ -21,25 +18,12 @@ const RandomChar = () => {
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    }
-
-    const onError = () => {
-        setError(true);
-        setLoading(false);
-    }
-
-    const onCharLoading = () => {
-        setLoading(true);
     }
 
     const updateChar = () => {
-        onCharLoading();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        marvelService
-            .getCharacter(id)
-            .then(onCharLoaded)
-            .catch(onError);
+        getCharacter(id)
+            .then(onCharLoaded);
     }
 
     const errorMessage = error ? <ErrorMessage/> : null;
@@ -72,6 +56,8 @@ const View = ({char}) => {
     const {name, descr, thumbnail, homepage, wiki} = char;
     const imgExists = !thumbnail.includes('image_not_available');
     const imgStyle = imgExists ? null : {objectPosition: 'left'};
+
+    const {reduceText} = useMarvelService();
     return (
         <div className="randomchar__block">
             <img 
@@ -81,7 +67,7 @@ const View = ({char}) => {
                 style={imgStyle} />
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
-                <p className="randomchar__descr">{descr ? marvelService.reduceText(descr) : ''}</p>
+                <p className="randomchar__descr">{descr ? reduceText(descr) : ''}</p>
                 <div className="randomchar__btns">
                     <a href={homepage} className="button button__main">
                         <div className="inner">homepage</div>
