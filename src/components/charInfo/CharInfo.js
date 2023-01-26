@@ -11,12 +11,13 @@ import './charInfo.scss';
 const CharInfo = (props) => {
     const [char, setChar] = useState(null);
 
-    const {error, loading, getCharacter} = useMarvelService();
+    const {error, loading, getCharacter, clearError} = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
     }
     const updateChar = () => { 
+        clearError();
         const {charID} = props;
         if (!charID) {
             return;
