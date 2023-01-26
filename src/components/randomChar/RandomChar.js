@@ -54,7 +54,7 @@ const RandomChar = () => {
 
 const View = ({char}) => {
     const {name, descr, thumbnail, homepage, wiki} = char;
-    const imgExists = !thumbnail.includes('image_not_available');
+    const imgExists = thumbnail != 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg';
     const imgStyle = imgExists ? null : {objectPosition: 'left'};
 
     const {reduceText} = useMarvelService();

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -41,19 +41,14 @@ const CharGrid = (props) => {
     )
 }
 
-const marvelService = MarvelService();
-
 const CharList = (props) => {
     const [chars, setChars] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const onCharListLoading = () => {
-        setNewItemLoading(true);
-    }
+    const {loading, error, getAllCharacters} = useMarvelService();
+
     const onCharsLoaded = (chars) => {
         let ended = false;
         let limit = 9;
@@ -63,24 +58,24 @@ const CharList = (props) => {
         }
         const newChars = chars.map(char => ({name: char.name, thumbnail: char.thumbnail, id: char.id}));
         setChars(chars => [...chars, ...newChars]);
-        setLoading(loading => false);
+        // setLoading(loading => false);
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + limit);
         setCharEnded(charEnded => ended);
     }
     const onError = () => {
-        setError(true);
-        setLoading(false);
+        // setError(true);
+        // setLoading(false);
         setNewItemLoading(false);
     }
-    const getChars = (offs) => {
+    const getChars = (offs, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
         let limit;
         if (offset + 9 > 1562) {
             limit = 1562 - offset;
         }
-        onCharListLoading();
-        marvelService
-            .getAllCharacters(offs, limit)
+        // setNewItemLoading(true);
+        getAllCharacters(offs, limit)
             .then(onCharsLoaded)
             .catch(onError);
     }
@@ -112,22 +107,22 @@ const CharList = (props) => {
     }
 
     useEffect(() => {
-        getChars();
+        getChars(offset, true);
     }, [])
 
     const charElems = transformChars();
-    const spinner = loading ? <Spinner/> : null;
+    const spinner = loading && !newItemLoading ? <Spinner/> : null;
     const errorMessage = error ? <ErrorMessage/> : null;
-    const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
+    // const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
 
     const btnStyle = newItemLoading ? {filter: 'grayscale(1)', opacity: '.5', cursor: 'not-allowed'} : null;
     return (
         <div className="char__list">
             {spinner}
             {errorMessage}
-            {content}
+            {<CharGrid elems={charElems}/>}
             <button 
-                onClick={() => {getChars(offset)}} 
+                onClick={() => {getChars(offset, false)}} 
                 className="button button__main button__long"
                 disabled={newItemLoading}
                 style={{...btnStyle, display: charEnded ? 'none' : 'block'}}>

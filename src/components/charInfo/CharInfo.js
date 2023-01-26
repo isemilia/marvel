@@ -10,32 +10,19 @@ import './charInfo.scss';
 
 const CharInfo = (props) => {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
 
-    const marvelService = useMarvelService();
+    const {error, loading, getCharacter} = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
     }
     const updateChar = () => { 
         const {charID} = props;
         if (!charID) {
             return;
         }
-        onCharLoading();
-        marvelService
-            .getCharacter(charID)
-            .then(onCharLoaded)
-            .catch(onError);
-    }
-    const onCharLoading = () => {
-        setLoading(true);
-    }
-    const onError = () => {
-        setError(true);
-        setLoading(false);
+        getCharacter(charID)
+            .then(onCharLoaded);
     }
     useEffect(() => {
         updateChar();
