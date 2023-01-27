@@ -58,14 +58,11 @@ const CharList = (props) => {
         }
         const newChars = chars.map(char => ({name: char.name, thumbnail: char.thumbnail, id: char.id}));
         setChars(chars => [...chars, ...newChars]);
-        // setLoading(loading => false);
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + limit);
         setCharEnded(charEnded => ended);
     }
     const onError = () => {
-        // setError(true);
-        // setLoading(false);
         setNewItemLoading(false);
     }
     const getChars = (offs, initial) => {
@@ -74,7 +71,6 @@ const CharList = (props) => {
         if (offset + 9 > 1562) {
             limit = 1562 - offset;
         }
-        // setNewItemLoading(true);
         getAllCharacters(offs, limit)
             .then(onCharsLoaded)
             .catch(onError);
@@ -87,12 +83,11 @@ const CharList = (props) => {
     }
 
     const onFocus = (index) => {
-        // console.log(this.itemRefs[index], index);
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[index].classList.add('char__item_selected');
     }
 
-    const transformChars = () => {
+    const renderChars = () => {
         return chars.map((char, i) => (
             <CharItem 
                 onFocus={onFocus}
@@ -110,7 +105,7 @@ const CharList = (props) => {
         getChars(offset, true);
     }, [])
 
-    const charElems = transformChars();
+    const charElems = renderChars();
     const spinner = loading && !newItemLoading ? <Spinner/> : null;
     const errorMessage = error ? <ErrorMessage/> : null;
     // const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
