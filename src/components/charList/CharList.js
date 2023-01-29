@@ -101,6 +101,7 @@ const CharList = (props) => {
         ));
     }
 
+    console.log('chlist');
     useEffect(() => {
         getChars(offset, true);
     }, [])
