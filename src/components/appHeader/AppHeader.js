@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import './appHeader.scss';
 
@@ -6,15 +6,15 @@ const AppHeader = () => {
     return (
         <header className="app__header">
             <h1 className="app__title">
-                <Link to="/">
+                <NavLink to="/">
                     <span>Marvel</span> information portal
-                </Link>
+                </NavLink>
             </h1>
             <nav className="app__menu">
                 <ul>
-                    <li><Link to="/">Characters</Link></li>
+                    <li><NavLink exact activeStyle={{color: '#9f0013'}} to="/">Characters</NavLink></li>
                     /
-                    <li><Link to="/comics">Comics</Link></li>
+                    <li><NavLink exact activeStyle={{color: '#9f0013'}} to="/comics">Comics</NavLink></li>
                 </ul>
             </nav>
         </header>
