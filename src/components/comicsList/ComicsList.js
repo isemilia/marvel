@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -7,14 +8,14 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import './comicsList.scss';
 
 const ComicsItem = (props) => {
-    const {thumbnail, title, price} = props;
+    const {thumbnail, title, price, comicID} = props;
     return (
         <li className="comics__item">
-            <a href="#">
+            <Link to={`${comicID}`}>
                 <img src={thumbnail} alt={title + ' thumbnail'} className="comics__item-img"/>
                 <div className="comics__item-name">{title}</div>
                 <div className="comics__item-price">{price}</div>
-            </a>
+            </Link>
         </li>
     )
 }
@@ -35,10 +36,11 @@ const ComicsList = () => {
     // console.log('after', comics);
 
     const renderComics = () => {
-        return comics.map(item => {
+        return comics.map((item, i) => {
             return (
                 <ComicsItem
-                    key={item.id}
+                    key={i}
+                    comicID={item.id}
                     thumbnail={item.thumbnail}
                     title={item.title}
                     price={item.price} />
@@ -62,7 +64,7 @@ const ComicsList = () => {
         if (data.length < 8) {
             ended = true;
         }
-        const newComics = data.map(item => ({title: item.title, thumbnail: item.thumbnail, price: item.price}))
+        const newComics = data.map(item => ({id: item.id, title: item.title, thumbnail: item.thumbnail, price: item.price}))
         setComics(comics => [...comics, ...newComics]);
         setOffset(offset => offset + 8)
         setComicsEnded(ended);

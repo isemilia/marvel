@@ -36,6 +36,7 @@ const useMarvelService = () => {
         return res.data.results.map(comic => (_transformComic(comic)));
     }
     const _transformComic = (comic) => {
+        console.log(comic);
         return {
             id: comic.id,
             title: comic.title,
@@ -45,6 +46,10 @@ const useMarvelService = () => {
             pageCount: comic.pageCount
         }
     }
+    const getComic = async (comicID) => {
+        const res = await request(`${_apiBase}/comics/${comicID}?${_apiKey}`);
+        return _transformComic(res.data.results[0]);
+    }
 
     const reduceText = (text) => {
         return text.length > 210 ? text.substring(0, 211).trim() + '...' : text;
@@ -53,7 +58,7 @@ const useMarvelService = () => {
         return Math.random().toString(16).slice(2);
     }
 
-    return {loading, error, getAllCharacters, getCharacter, reduceText, generateID, clearError, getAllComics};
+    return {loading, error, getAllCharacters, getCharacter, reduceText, generateID, clearError, getAllComics, getComic};
 } 
 
 export default useMarvelService;
