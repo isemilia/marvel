@@ -48,7 +48,7 @@ const SingleComicPage = () => {
     const {thumbnail, title, descr, pageCount, price} = comic;
 
     const spinner = loading ? <Spinner/> : null;
-    const errorMsg = error ? <ErrorMessage/> : null;
+    const errorMsg = error ? <ErrorMessage customStyle={{display: 'block'}} /> : null;
     const content = !(loading || error) ? 
         <Comic
             thumbnail={thumbnail}
