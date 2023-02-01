@@ -19,7 +19,7 @@ const Comic = (props) => {
                 <p className="single-comic__descr">Language: en-us</p>
                 <div className="single-comic__price">{price}</div>
             </div>
-            <a href="#" className="single-comic__back">Back to all</a>
+            <Link to={'/comics'} className="single-comic__back">Back to all</Link>
         </div>
     )
 }
