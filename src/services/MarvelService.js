@@ -43,7 +43,7 @@ const useMarvelService = () => {
             thumbnail: `${comic.thumbnail.path}.${comic.thumbnail.extension}`,
             descr: comic.description ? comic.description : 'There is no description for this comic.',
             price: comic.prices[0].price > 0 ? `${comic.prices[0].price}$` : 'Not available',
-            pageCount: comic.pageCount
+            pageCount: comic.pageCount ? `${comic.pageCount}p.` : 'No information about the number of pages.'
         }
     }
     const getComic = async (comicID) => {
