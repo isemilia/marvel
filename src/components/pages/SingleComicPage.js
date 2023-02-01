@@ -32,11 +32,18 @@ const SingleComicPage = () => {
     const [comic, setComic] = useState({});
 
     useEffect(() => {
-        const newComic = getComic(comicID)
-            .then((data) => {
-                setComic(data);
-            })
-    }, [])
+        updateComic(comicID);
+    }, [comicID])
+
+    const updateComic = (id) => {
+        clearError();
+        getComic(id)
+            .then(onComicLoaded)
+    }
+
+    const onComicLoaded = (comic) => {
+        setComic(comic);
+    }
 
     const {thumbnail, title, descr, pageCount, price} = comic;
 
