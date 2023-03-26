@@ -1,9 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import motionParams from '../../services/motionParams';
 
 import './singleComicPage.scss';
 
@@ -58,11 +60,11 @@ const SingleComicPage = () => {
             price={price} /> : null;
 
     return (
-        <>
+        <motion.div {...motionParams}>
             {spinner}
             {errorMsg}
             {content}
-        </>
+        </motion.div>
     )
 }
 
