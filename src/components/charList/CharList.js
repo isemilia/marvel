@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -7,14 +8,14 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './charList.scss';
 
-// char__item_selected
-
 const CharItem = (props) => {
     const {img, name, charID, onCharSelected, setRef, onFocus, index} = props;
     const imgExists = !img.includes('image_not_available');
     const imgStyle = imgExists ? null : {objectPosition: 'left'};
     return (
-        <li 
+        <motion.li 
+            initial={{opacity: 0}}
+            animate={{opacity: 1, transition: {delay: (index%9) * 0.25}}}
             ref={el => setRef(el, index)} 
             className="char__item" 
             tabIndex="0" 
@@ -26,9 +27,17 @@ const CharItem = (props) => {
                 onCharSelected(charID);
                 onFocus(index);
             }}>
-            <img src={img} alt={name} style={imgStyle} />
-            <div className="char__name">{name}</div>
-        </li>
+            <motion.img 
+                initial={{opacity: 0, filter: 'grayscale(1)'}} 
+                animate={{opacity: 1, filter: 'grayscale(0)', transition: {delay: (index%9) * 0.3}}}
+                src={img} 
+                alt={name} 
+                style={imgStyle} />
+            <motion.div 
+                initial={{opacity: 0}} 
+                animate={{opacity: 1, transition: {delay: (index%9) * 0.3}}}
+                className="char__name">{name}</motion.div>
+        </motion.li>
     )
 }
 
@@ -115,7 +124,9 @@ const CharList = (props) => {
         <div className="char__list">
             {spinner}
             {errorMessage}
-            {<CharGrid elems={charElems}/>}
+            <AnimatePresence>
+                <CharGrid elems={charElems}/>
+            </AnimatePresence>
             <button 
                 onClick={() => {getChars(offset, false)}} 
                 className="button button__main button__long"

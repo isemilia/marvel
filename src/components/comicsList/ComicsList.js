@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -8,15 +9,18 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import './comicsList.scss';
 
 const ComicsItem = (props) => {
-    const {thumbnail, title, price, comicID} = props;
+    const {thumbnail, title, price, comicID, index} = props;
     return (
-        <li className="comics__item">
+        <motion.li 
+            initial={{opacity: 0}}
+            animate={{opacity: 1, transition: {delay: (index%8) * 0.25}}}
+            className="comics__item">
             <Link to={`${comicID}`}>
                 <img src={thumbnail} alt={title + ' thumbnail'} className="comics__item-img"/>
                 <div className="comics__item-name">{title}</div>
                 <div className="comics__item-price">{price}</div>
             </Link>
-        </li>
+        </motion.li>
     )
 }
 
@@ -43,7 +47,8 @@ const ComicsList = () => {
                     comicID={item.id}
                     thumbnail={item.thumbnail}
                     title={item.title}
-                    price={item.price} />
+                    price={item.price}
+                    index={i} />
             );
         });
     }
@@ -80,9 +85,11 @@ const ComicsList = () => {
         <div className="comics__list">
             {spinner}
             {errorMsg}
-            <ul className="comics__grid">
-                {comicsElems}
-            </ul>
+            <AnimatePresence>
+                <ul className="comics__grid">
+                    {comicsElems}
+                </ul>
+            </AnimatePresence>
             <button 
                 onClick={() => updateComics(offset)} 
                 className="button button__main button__long"
