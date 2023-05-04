@@ -6,6 +6,7 @@ import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import motionParams from "../../services/motionParams";
+import Search from "../search/Search";
 
 import decoration from '../../resources/img/vision.png';
 
@@ -26,7 +27,10 @@ const MainPage = () => {
                     <CharList onCharSelected={onCharSelected} />
                 </ErrorBoundary>
                 <ErrorBoundary>
-                    <CharInfo charID={selectedChar} />
+                    <div>
+                        <CharInfo charID={selectedChar} />
+                        <Search />
+                    </div>
                 </ErrorBoundary>
             </div>
             <img className="bg-decoration" src={decoration} alt="vision"/>
