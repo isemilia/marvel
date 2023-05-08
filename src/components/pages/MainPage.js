@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
@@ -18,23 +19,32 @@ const MainPage = () => {
     }
 
     return (
-        <motion.div {...motionParams}>
-            <ErrorBoundary>
-                <RandomChar/>
-            </ErrorBoundary>
-            <div className="char__content">
+        <>
+            <Helmet>
+                <meta
+                    name="description"
+                    content="Marvel information portal"
+                    />
+                <title>Marvel information portal</title>
+            </Helmet>
+            <motion.div {...motionParams}>
                 <ErrorBoundary>
-                    <CharList onCharSelected={onCharSelected} />
+                    <RandomChar/>
                 </ErrorBoundary>
-                <ErrorBoundary>
-                    <div>
-                        <CharInfo charID={selectedChar} />
-                        <Search />
-                    </div>
-                </ErrorBoundary>
-            </div>
-            <img className="bg-decoration" src={decoration} alt="vision"/>
-        </motion.div>
+                <div className="char__content">
+                    <ErrorBoundary>
+                        <CharList onCharSelected={onCharSelected} />
+                    </ErrorBoundary>
+                    <ErrorBoundary>
+                        <div>
+                            <CharInfo charID={selectedChar} />
+                            <Search />
+                        </div>
+                    </ErrorBoundary>
+                </div>
+                <img className="bg-decoration" src={decoration} alt="vision"/>
+            </motion.div>
+        </>
     )
 }
 

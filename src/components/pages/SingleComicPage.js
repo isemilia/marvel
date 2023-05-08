@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -60,11 +61,20 @@ const SingleComicPage = () => {
             price={price} /> : null;
 
     return (
-        <motion.div {...motionParams}>
-            {spinner}
-            {errorMsg}
-            {content}
-        </motion.div>
+        <>
+            <Helmet>
+                <meta
+                    name="description"
+                    content={`${title} description`}
+                    />
+                <title>{`About ${title}`}</title>
+            </Helmet>
+            <motion.div {...motionParams}>
+                {spinner}
+                {errorMsg}
+                {content}
+            </motion.div>
+        </>
     )
 }
 

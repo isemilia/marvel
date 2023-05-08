@@ -3,6 +3,7 @@ import './SingleCharPage.scss';
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -56,11 +57,20 @@ const SingleCharPage = () => {
             descr={descr} /> : null;
 
     return (
-        <motion.div {...motionParams}>
-            {spinner}
-            {errorMsg}
-            {content}
-        </motion.div>
+        <>
+            <Helmet>
+                <meta
+                    name="description"
+                    content={`${name} description`}
+                    />
+                <title>{`About ${name}`}</title>
+            </Helmet>
+            <motion.div {...motionParams}>
+                {spinner}
+                {errorMsg}
+                {content}
+            </motion.div>
+        </>
     )
 }
 
