@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
 
 export const useHttp = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [process, setProcess] = useState('waiting');
 
     const request = useCallback(async (url, method = 'GET', body = null, headers = {'Content-type': 'application/json'}) => {
-        setLoading(true);
+        setProcess('loading');
+
         try {
             const response = await fetch(url, {method, headers, body});
             if(!response.ok) {
@@ -13,21 +13,22 @@ export const useHttp = () => {
             }
             const data = await response.json();
 
+            setProcess('confirmed');
             return data;
         } catch (e) {
-            setError(e.message);
+            setProcess('error');
             throw e;
-        } finally {
-            setLoading(false);
-        }
+        } 
     }, []);
 
-    const clearError = useCallback(() => setError(null), []);
+    const clearError = useCallback(() => {
+        setProcess('waiting');
+    }, []);
 
     return {
-        loading, 
         request,
-        error,
-        clearError
+        clearError,
+        process,
+        setProcess,
     }
 } 

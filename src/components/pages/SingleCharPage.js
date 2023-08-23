@@ -8,11 +8,12 @@ import { Helmet } from 'react-helmet';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContent from '../../utils/setContent';
 import motionParams from '../../services/motionParams';
 
-const Char = (props) => {
+const Char = ({data}) => {
 
-    const {name, descr, thumbnail} = props;
+    const {name, descr, thumbnail} = data;
 
     return (
         <div className="single-comic">
@@ -28,7 +29,7 @@ const Char = (props) => {
 const SingleCharPage = () => {
     const {charID} = useParams();
 
-    const {error, loading, getCharacter, clearError} = useMarvelService();
+    const {getCharacter, clearError, process, setProcess} = useMarvelService();
 
     const [char, setChar] = useState({});
 
@@ -40,21 +41,14 @@ const SingleCharPage = () => {
         clearError();
         getCharacter(id)
             .then(onCharLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     const onCharLoaded = (char) => {
         setChar(char);
     }
 
-    const {thumbnail, name, descr} = char;
-
-    const spinner = loading ? <Spinner/> : null;
-    const errorMsg = error ? <ErrorMessage customStyle={{display: 'block'}} /> : null;
-    const content = !(loading || error) ? 
-        <Char
-            thumbnail={thumbnail}
-            name={name}
-            descr={descr} /> : null;
+    const {name} = char;
 
     return (
         <>
@@ -66,9 +60,7 @@ const SingleCharPage = () => {
                 <title>{`About ${name}`}</title>
             </Helmet>
             <motion.div {...motionParams}>
-                {spinner}
-                {errorMsg}
-                {content}
+                {setContent(process, Char, char)}
             </motion.div>
         </>
     )

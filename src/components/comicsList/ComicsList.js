@@ -8,6 +8,21 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
 
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+        case 'loading': 
+            return newItemLoading ? <Component /> : <Spinner/>;
+        case 'confirmed':
+            return <Component />;
+        case 'error':
+            return <ErrorMessage/>;
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
+
 const ComicsItem = (props) => {
     const {thumbnail, title, price, comicID, index} = props;
     return (
@@ -28,16 +43,13 @@ const ComicsList = () => {
     const [comics, setComics] = useState([]);
     const [comicsEnded, setComicsEnded] = useState(false);
     const [offset, setOffset] = useState(0);
-    const [newItemLoading, setNewItemLoading] = useState(true);
+    const [newItemLoading, setNewItemLoading] = useState(false);
 
-    const {getAllComics, loading, error} = useMarvelService();
-
+    const {getAllComics, process, setProcess} = useMarvelService();
     useEffect(() => {
         getAllComics()
             .then(() => updateComics(offset, true))
     }, []);
-
-    // console.log('after', comics);
 
     const renderComics = () => {
         return comics.map((item, i) => {
@@ -54,10 +66,11 @@ const ComicsList = () => {
     }
 
     const updateComics = (offset, initial) => {
-        setNewItemLoading(true);
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllComics(offset)
             .then(onComicsLoaded)
-            .catch(onError)
+            .then(() => setProcess('confirmed'))
+            .catch(onError);
     }
 
     const onError = () => {
@@ -69,7 +82,7 @@ const ComicsList = () => {
         if (data.length < 8) {
             ended = true;
         }
-        const newComics = data.map(item => ({id: item.id, title: item.title, thumbnail: item.thumbnail, price: item.price}))
+        const newComics = data.map(item => ({id: item.id, title: item.title, thumbnail: item.thumbnail, price: item.price}));
         setComics(comics => [...comics, ...newComics]);
         setOffset(offset => offset + 8)
         setComicsEnded(ended);
@@ -77,21 +90,15 @@ const ComicsList = () => {
     }
 
     const comicsElems = renderComics();
-    const spinner = loading ? <Spinner/> : null; 
-    const errorMsg = error ? <ErrorMessage/> : null;
 
     const btnStyle = newItemLoading ? {filter: 'grayscale(1)', opacity: '.5', cursor: 'not-allowed', pointerEvents: 'none'} : null;
     return (
         <div className="comics__list">
-            {spinner}
-            {errorMsg}
             <AnimatePresence>
-                <ul className="comics__grid">
-                    {comicsElems}
-                </ul>
+                {setContent(process, () => <ul className="comics__grid">{comicsElems}</ul>, newItemLoading)}
             </AnimatePresence>
             <button 
-                onClick={() => updateComics(offset)} 
+                onClick={() => updateComics(offset, false)} 
                 className="button button__main button__long"
                 style={btnStyle}>
                 <div className="inner">load more</div>

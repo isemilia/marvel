@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -7,6 +7,21 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './charList.scss';
+
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+        case 'loading': 
+            return newItemLoading ? <Component /> : <Spinner/>;
+        case 'confirmed':
+            return <Component />;
+        case 'error':
+            return <ErrorMessage/>;
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
 
 const CharItem = (props) => {
     const {img, name, charID, onCharSelected, setRef, onFocus, index} = props;
@@ -56,7 +71,9 @@ const CharList = (props) => {
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const {loading, error, getAllCharacters} = useMarvelService();
+    const {getAllCharacters, process, setProcess} = useMarvelService();
+
+    console.log('cl');
 
     const onCharsLoaded = (chars) => {
         let ended = false;
@@ -82,6 +99,7 @@ const CharList = (props) => {
         }
         getAllCharacters(offs, limit)
             .then(onCharsLoaded)
+            .then(() => setProcess('confirmed'))
             .catch(onError);
     }
 
@@ -115,17 +133,17 @@ const CharList = (props) => {
     }, [])
 
     const charElems = renderChars();
-    const spinner = loading && !newItemLoading ? <Spinner/> : null;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    // const content = !(loading || error) ? <CharGrid elems={charElems}/> : null; 
 
     const btnStyle = newItemLoading ? {filter: 'grayscale(1)', opacity: '.5', cursor: 'not-allowed'} : null;
+
+    const elems = useMemo(() => {
+        return setContent(process, () => <CharGrid elems={charElems} />, newItemLoading);
+    }, [process]); 
+
     return (
         <div className="char__list">
-            {spinner}
-            {errorMessage}
             <AnimatePresence>
-                <CharGrid elems={charElems}/>
+                {elems}
             </AnimatePresence>
             <button 
                 onClick={() => {getChars(offset, false)}} 

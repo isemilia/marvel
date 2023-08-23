@@ -4,14 +4,13 @@ import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContent from '../../utils/setContent';
 import motionParams from '../../services/motionParams';
 
 import './singleComicPage.scss';
 
-const Comic = (props) => {
-    const {thumbnail, title, descr, pageCount, price} = props;
+const Comic = ({data}) => {
+    const {thumbnail, title, descr, pageCount, price} = data;
     return (
         <div className="single-comic">
             <img src={thumbnail} alt="x-men" className="single-comic__img"/>
@@ -30,7 +29,7 @@ const Comic = (props) => {
 const SingleComicPage = () => {
     const {comicID} = useParams();
 
-    const {error, loading, getComic, clearError} = useMarvelService();
+    const {getComic, clearError, process, setProcess} = useMarvelService();
 
     const [comic, setComic] = useState({});
 
@@ -42,23 +41,14 @@ const SingleComicPage = () => {
         clearError();
         getComic(id)
             .then(onComicLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     const onComicLoaded = (comic) => {
         setComic(comic);
     }
 
-    const {thumbnail, title, descr, pageCount, price} = comic;
-
-    const spinner = loading ? <Spinner/> : null;
-    const errorMsg = error ? <ErrorMessage customStyle={{display: 'block'}} /> : null;
-    const content = !(loading || error) ? 
-        <Comic
-            thumbnail={thumbnail}
-            title={title}
-            descr={descr}
-            pageCount={pageCount}
-            price={price} /> : null;
+    const {title} = comic;
 
     return (
         <>
@@ -70,9 +60,7 @@ const SingleComicPage = () => {
                 <title>{`About ${title}`}</title>
             </Helmet>
             <motion.div {...motionParams}>
-                {spinner}
-                {errorMsg}
-                {content}
+                {setContent(process, Comic, comic)}
             </motion.div>
         </>
     )

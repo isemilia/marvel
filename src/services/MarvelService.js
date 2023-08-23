@@ -9,7 +9,7 @@ const useMarvelService = () => {
     const _comicsLimit = 8;
     const _comicsOffset = 0;
 
-    const {loading, request, error, clearError} = useHttp();
+    const {request, clearError, process, setProcess} = useHttp();
 
     const getAllCharacters = async (offset = _charBaseOffset, limit = _charLimit) => {
         const res = await request(`${_apiBase}/characters?limit=${limit}&offset=${offset}&${_apiKey}`);
@@ -61,7 +61,18 @@ const useMarvelService = () => {
         return Math.random().toString(16).slice(2);
     }
 
-    return {loading, error, getAllCharacters, getCharacter, reduceText, generateID, clearError, getAllComics, getComic, getCharByName};
+    return {
+        getAllCharacters, 
+        getCharacter, 
+        reduceText, 
+        generateID, 
+        clearError, 
+        getAllComics, 
+        getComic, 
+        getCharByName, 
+        process,
+        setProcess
+    };
 } 
 
 export default useMarvelService;

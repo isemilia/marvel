@@ -31,6 +31,10 @@
             border: 0;
             width: 100%;
         }
+        .button[disabled] {
+            pointer-events: none;
+            filter: grayscale(.8);
+        }
     }
     &-message {
         font-family: 'Roboto Condensed';
